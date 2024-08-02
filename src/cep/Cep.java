@@ -1,27 +1,35 @@
 package cep;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import java.awt.Toolkit;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
-import javax.swing.JButton;
-import java.awt.SystemColor;
 import java.awt.Cursor;
+import java.awt.Desktop;
+import java.awt.EventQueue;
+import java.awt.SystemColor;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.URI;
+
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
+import Atxy2k.CustomTextField.RestrictedTextField;
 
 public class Cep extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
+	private JTextField txtCep;
+	private JTextField txtEndereco;
+	private JTextField txtBairro;
+	private JTextField txtCidade;
 
 	/**
 	 * Launch the application.
@@ -53,66 +61,91 @@ public class Cep extends JFrame {
 
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
 		JLabel lblNewLabel = new JLabel("CEP:");
 		lblNewLabel.setBounds(30, 24, 46, 14);
 		contentPane.add(lblNewLabel);
-		
-		textField = new JTextField();
-		textField.setBounds(61, 21, 98, 20);
-		contentPane.add(textField);
-		textField.setColumns(10);
-		
+
+		txtCep = new JTextField();
+		txtCep.setBounds(61, 21, 98, 20);
+		contentPane.add(txtCep);
+		txtCep.setColumns(10);
+
 		JLabel lblNewLabel_1 = new JLabel("Endereço:");
 		lblNewLabel_1.setBounds(30, 75, 58, 14);
 		contentPane.add(lblNewLabel_1);
-		
-		textField_1 = new JTextField();
-		textField_1.setBounds(30, 94, 239, 20);
-		contentPane.add(textField_1);
-		textField_1.setColumns(10);
-		
+
+		txtEndereco = new JTextField();
+		txtEndereco.setBounds(30, 94, 239, 20);
+		contentPane.add(txtEndereco);
+		txtEndereco.setColumns(10);
+
 		JLabel lblNewLabel_2 = new JLabel("Bairro:");
 		lblNewLabel_2.setBounds(30, 125, 46, 14);
 		contentPane.add(lblNewLabel_2);
-		
-		textField_2 = new JTextField();
-		textField_2.setBounds(30, 143, 239, 20);
-		contentPane.add(textField_2);
-		textField_2.setColumns(10);
-		
+
+		txtBairro = new JTextField();
+		txtBairro.setBounds(30, 143, 239, 20);
+		contentPane.add(txtBairro);
+		txtBairro.setColumns(10);
+
 		JLabel lblNewLabel_3 = new JLabel("Cidade:");
 		lblNewLabel_3.setBounds(30, 174, 46, 14);
 		contentPane.add(lblNewLabel_3);
-		
-		textField_3 = new JTextField();
-		textField_3.setBounds(30, 193, 160, 20);
-		contentPane.add(textField_3);
-		textField_3.setColumns(10);
-		
+
+		txtCidade = new JTextField();
+		txtCidade.setBounds(30, 193, 160, 20);
+		contentPane.add(txtCidade);
+		txtCidade.setColumns(10);
+
 		JLabel lblNewLabel_4 = new JLabel("UF:");
 		lblNewLabel_4.setBounds(210, 174, 46, 14);
 		contentPane.add(lblNewLabel_4);
-		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(210, 192, 59, 22);
-		contentPane.add(comboBox);
-		
-		JButton btnNewButton = new JButton("Limpar");
-		btnNewButton.setBounds(30, 227, 89, 23);
-		contentPane.add(btnNewButton);
-		
-		JButton btnNewButton_1 = new JButton("Buscar");
-		btnNewButton_1.setBounds(180, 20, 89, 23);
-		contentPane.add(btnNewButton_1);
-		
-		JButton btnNewButton_2 = new JButton("");
-		btnNewButton_2.setToolTipText("Sobre");
-		btnNewButton_2.setIcon(new ImageIcon(Cep.class.getResource("/img/about.png")));
-		btnNewButton_2.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		btnNewButton_2.setBorder(null);
-		btnNewButton_2.setBackground(SystemColor.control);
-		btnNewButton_2.setBounds(237, 240, 32, 32);
-		contentPane.add(btnNewButton_2);
+
+		JComboBox cboUf = new JComboBox();
+		cboUf.setModel(new DefaultComboBoxModel(
+				new String[] { "", "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA",
+						"PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO" }));
+		cboUf.setBounds(210, 192, 59, 22);
+		contentPane.add(cboUf);
+
+		JButton btnLimpar = new JButton("Limpar");
+		btnLimpar.setBounds(30, 227, 89, 23);
+		contentPane.add(btnLimpar);
+
+		JButton btnCep = new JButton("Buscar");
+		btnCep.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (txtCep.getText().equals("")) {
+					JOptionPane.showMessageDialog(null, "O preenchimento do CEP é obrigatório.");
+					txtCep.requestFocus();
+				} else {
+					// buscar CEP
+				}
+			}
+		});
+		btnCep.setBounds(180, 20, 89, 23);
+		contentPane.add(btnCep);
+
+		JButton btnSobre = new JButton("");
+		btnSobre.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Sobre sobre = new Sobre();
+				sobre.setVisible(true);
+			}
+		});
+		btnSobre.setToolTipText("Sobre");
+		btnSobre.setIcon(new ImageIcon(Cep.class.getResource("/img/about.png")));
+		btnSobre.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		btnSobre.setBorder(null);
+		btnSobre.setBackground(SystemColor.control);
+		btnSobre.setBounds(237, 240, 32, 32);
+		contentPane.add(btnSobre);
+
+		// Restrições para o campo txtCep - Atxy2k
+		RestrictedTextField validateCep = new RestrictedTextField(txtCep);
+		validateCep.setLimit(8);
+		validateCep.setOnlyNums(true);
 	}
+	
 }
