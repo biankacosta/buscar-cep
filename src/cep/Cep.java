@@ -8,6 +8,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
+import java.net.URL;
+import java.util.Iterator;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -20,6 +22,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+
 import Atxy2k.CustomTextField.RestrictedTextField;
 
 public class Cep extends JFrame {
@@ -30,6 +36,7 @@ public class Cep extends JFrame {
 	private JTextField txtEndereco;
 	private JTextField txtBairro;
 	private JTextField txtCidade;
+	private JComboBox cboUf;
 
 	/**
 	 * Launch the application.
@@ -102,7 +109,7 @@ public class Cep extends JFrame {
 		lblNewLabel_4.setBounds(210, 174, 46, 14);
 		contentPane.add(lblNewLabel_4);
 
-		JComboBox cboUf = new JComboBox();
+		cboUf = new JComboBox();
 		cboUf.setModel(new DefaultComboBoxModel(
 				new String[] { "", "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA",
 						"PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO" }));
@@ -110,6 +117,11 @@ public class Cep extends JFrame {
 		contentPane.add(cboUf);
 
 		JButton btnLimpar = new JButton("Limpar");
+		btnLimpar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				limpar();
+			}
+		});
 		btnLimpar.setBounds(30, 227, 89, 23);
 		contentPane.add(btnLimpar);
 
@@ -120,7 +132,7 @@ public class Cep extends JFrame {
 					JOptionPane.showMessageDialog(null, "O preenchimento do CEP é obrigatório.");
 					txtCep.requestFocus();
 				} else {
-					// buscar CEP
+					buscarCep();
 				}
 			}
 		});
@@ -146,6 +158,55 @@ public class Cep extends JFrame {
 		RestrictedTextField validateCep = new RestrictedTextField(txtCep);
 		validateCep.setLimit(8);
 		validateCep.setOnlyNums(true);
+	}
+	
+	private void buscarCep() {
+		String cep = txtCep.getText();
+		String resultado = null;
+		String logradouro = "";
+		String tipoLogradouro = "";
+		
+		try {
+			URL url = new URL("http://cep.republicavirtual.com.br/web_cep.php?cep=" + cep +"&formato=xml");
+			SAXReader reader = new SAXReader();
+			Document document = reader.read(url);
+			Element root = document.getRootElement();
+			
+			for (Iterator<Element> it = root.elementIterator(); it.hasNext();) {
+		        Element element = it.next();
+		        
+		        if (element.getQualifiedName().equals("resultado")) {
+		        	resultado = element.getText();
+		        	
+		        	if (!resultado.equals("1")) {
+		        		JOptionPane.showMessageDialog(null, "CEP não encontrado");
+		        	}
+		        } else if (element.getQualifiedName().equals("cidade")) {
+		        	txtCidade.setText(element.getText());
+		        } else if (element.getQualifiedName().equals("bairro")) {
+		        	txtBairro.setText(element.getText());
+		        } else if (element.getQualifiedName().equals("uf")) {
+		        	cboUf.setSelectedItem(element.getText());
+		        } else if (element.getQualifiedName().equals("tipo_logradouro")) {
+		        	tipoLogradouro = element.getText();
+		        } else if (element.getQualifiedName().equals("logradouro")) {
+		        	logradouro = element.getText();
+		        }
+		    }
+			
+			txtEndereco.setText(tipoLogradouro + " " + logradouro);
+		} catch (Exception e) {
+			System.err.print(e);
+		}
+	}
+	
+	private void limpar() {
+		txtCep.setText(null);
+		txtCidade.setText(null);
+		txtBairro.setText(null);
+		txtEndereco.setText(null);
+		cboUf.setSelectedItem(null);
+		txtCep.requestFocus();
 	}
 	
 }
